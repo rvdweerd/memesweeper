@@ -28,7 +28,7 @@ void MineField::Draw(Graphics& gfx)
 	for (Vei2 grid = { 0,0 }; grid.y < height; grid.y++)
 		for (grid.x = 0; grid.x < width; grid.x++)
 		{
-			TileAt(grid).Draw(grid * SpriteCodex::tileSize, TileAt(grid).state , gfx);
+			TileAt(grid).Draw(grid * SpriteCodex::tileSize, gfx);
 		}
 		
 	
@@ -77,7 +77,7 @@ void MineField::Tile::Reveal()
 	state = State::Revealed;
 }
 
-void MineField::Tile::Draw(Vei2& screenPos, State state, Graphics& gfx)
+void MineField::Tile::Draw(Vei2& screenPos, Graphics& gfx)
 {
 	SpriteCodex::DrawTileButton(screenPos, gfx);
 }

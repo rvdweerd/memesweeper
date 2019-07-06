@@ -14,7 +14,7 @@ class MineField {
 		void SpawnBomb();
 		bool IsRevealed();
 		void Reveal();
-		void Draw(Vei2& screenPos, State state, Graphics& gfx);
+		void Draw(Vei2& screenPos, Graphics& gfx);
 
 	public:
 		State state = State::Hidden;
