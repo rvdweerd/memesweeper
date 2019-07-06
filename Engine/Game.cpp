@@ -26,7 +26,7 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	mineField(10)
+	mineField(50)
 {
 }
 
@@ -46,11 +46,25 @@ void Game::UpdateModel()
 		//mineField.OnRevealClick( Vei2(wnd.mouse.GetPosX(), wnd.mouse.GetPosY()) );
 		mineField.OnRevealClick( wnd.mouse.GetPos() );
 	}
+
+	//if (wnd.mouse.RightIsPressed())
+	{
+		mineField.Peek(wnd.mouse.GetPos());
+	}
+
 }
 
 void Game::ComposeFrame()
 {
 	mineField.Draw(gfx);
+
+	//if (wnd.mouse.RightIsPressed())
+	{
+		mineField.DrawNeighborData(gfx,wnd.mouse.GetPos()/SpriteCodex::tileSize);
+	}
+
+
+
 	int i = 400;
 	SpriteCodex::DrawTile0({ i+=20,100 }, gfx);
 	SpriteCodex::DrawTile1({ i += 20,100 }, gfx);
