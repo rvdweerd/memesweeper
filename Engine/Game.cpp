@@ -20,11 +20,13 @@
  ******************************************************************************************/
 #include "MainWindow.h"
 #include "Game.h"
+#include "SpriteCodex.h"
 
 Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
-	gfx( wnd )
+	gfx( wnd ),
+	mineField(10)
 {
 }
 
@@ -42,4 +44,23 @@ void Game::UpdateModel()
 
 void Game::ComposeFrame()
 {
+	mineField.Draw(gfx);
+	int i = 400;
+	SpriteCodex::DrawTile0({ i+=20,100 }, gfx);
+	SpriteCodex::DrawTile1({ i += 20,100 }, gfx);
+	SpriteCodex::DrawTile2({ i += 20,100 }, gfx);
+	SpriteCodex::DrawTile3({ i += 20,100 }, gfx);
+	SpriteCodex::DrawTile4({ i += 20,100 }, gfx);
+	SpriteCodex::DrawTile5({ i += 20,100 }, gfx);
+	SpriteCodex::DrawTile6({ i += 20,100 }, gfx);
+	SpriteCodex::DrawTile7({ i += 20,100 }, gfx);
+	SpriteCodex::DrawTile8({ i ,100 }, gfx);
+	i = 400;
+	SpriteCodex::DrawTileButton({ i+=20 ,120 }, gfx);
+	SpriteCodex::DrawTileCross({ i += 20 ,120 }, gfx);
+	SpriteCodex::DrawTileFlag({ i += 20 ,120 }, gfx);
+	SpriteCodex::DrawTileBomb({ i += 20 ,120 }, gfx);
+	SpriteCodex::DrawTileBombRed({ i += 20 ,120 }, gfx);
+
+
 }
