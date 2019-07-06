@@ -19,9 +19,10 @@
  *	along with The Chili DirectX Framework.  If not, see <http://www.gnu.org/licenses/>.  *
  ******************************************************************************************/
 #include "Mouse.h"
+#include "Vei2.h"
 
-
-std::pair<int,int> Mouse::GetPos() const
+//std::pair<int,int> Mouse::GetPos() const
+Vei2 Mouse::GetPos() const
 {
 	return { x,y };
 }

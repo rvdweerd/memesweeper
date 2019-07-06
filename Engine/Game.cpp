@@ -40,6 +40,12 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
+	if (wnd.mouse.LeftIsPressed())
+	{
+		//mineField.TileAt(Vei2(wnd.mouse.GetPosX(),wnd.mouse.GetPosY()) / SpriteCodex::tileSize ).Reveal();
+		//mineField.OnRevealClick( Vei2(wnd.mouse.GetPosX(), wnd.mouse.GetPosY()) );
+		mineField.OnRevealClick( wnd.mouse.GetPos() );
+	}
 }
 
 void Game::ComposeFrame()

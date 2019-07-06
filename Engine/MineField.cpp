@@ -40,6 +40,20 @@ void MineField::Draw(Graphics& gfx)
 	*/
 }
 
+void MineField::OnRevealClick(const Vei2& screenPos)
+{
+	//TileAt(ScreenToGrid(screenPos)).Reveal();
+	const Vei2 gridPos = ScreenToGrid(screenPos);
+	assert(gridPos.x >= 0 && gridPos.x < width && gridPos.y >= 0 && gridPos.y < height);
+	Tile& tile = TileAt(gridPos);
+	if (!tile.IsRevealed())
+	{
+		tile.Reveal();
+	}
+
+
+}
+
 /*Vei2 MineField::TileAt(int index)
 {
 	return Vei2( index%width , (index - index%width)/width );
@@ -50,11 +64,14 @@ MineField::Tile& MineField::TileAt(const Vei2& gridPos)
 	return tileField[gridPos.y * width + gridPos.x];
 }
 
-
-
 const MineField::Tile& MineField::TileAt(const Vei2& gridPos) const
 {
 	return tileField[gridPos.y*width+gridPos.x];
+}
+
+Vei2 MineField::ScreenToGrid(const Vei2& screenPos) const
+{
+	return screenPos / SpriteCodex::tileSize;
 }
 
 bool MineField::Tile::HasBomb()
@@ -77,7 +94,32 @@ void MineField::Tile::Reveal()
 	state = State::Revealed;
 }
 
-void MineField::Tile::Draw(Vei2& screenPos, Graphics& gfx)
+void MineField::Tile::Draw(const Vei2& screenPos, Graphics& gfx)
 {
-	SpriteCodex::DrawTileButton(screenPos, gfx);
+	switch (state)
+	{
+		case State::Hidden:
+		{
+			SpriteCodex::DrawTileButton(screenPos, gfx);
+			break; 
+		}
+		case State::Flagged:
+		{
+			SpriteCodex::DrawTileButton(screenPos, gfx);
+			SpriteCodex::DrawTileFlag(screenPos, gfx);
+			break;
+		}
+		case State::Revealed:
+		{
+			if (hasBomb)
+			{
+				SpriteCodex::DrawTileBomb(screenPos, gfx);
+			}
+			else
+			{
+				SpriteCodex::DrawTile0(screenPos, gfx);
+			}
+		}
+
+	}
 }
