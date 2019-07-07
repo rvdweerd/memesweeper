@@ -186,6 +186,21 @@ void MineField::OnRevealClick(const Vei2& screenPos)
 			{
 				fieldHasExploded = true;
 			}
+
+			if (tile.GetNBombsAround() == 0)
+			{
+				for (int x = std::max(0, gridPos.x - 1); x <= std::min(width-1,gridPos.x + 1); x++)
+				{
+					for (int y = std::max(0,gridPos.y - 1); y <= std::min(height-1,gridPos.y + 1); y++)
+					{
+						if (!(Vei2(x, y) == gridPos))
+						{
+							OnRevealClick(Vei2(x, y)*SpriteCodex::tileSize);
+						}
+					}
+				}
+			}
+
 		}
 	}
 }
