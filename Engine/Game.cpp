@@ -26,7 +26,7 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	mineField(50)
+	mineField( MineField::width * MineField::height * 0.2f)
 {
 }
 
@@ -56,7 +56,7 @@ void Game::UpdateModel()
 			}
 			else*/ if (e.GetType() == Mouse::Event::Type::RPress)
 			{
-				mineField.ToggleFlag(wnd.mouse.GetPos() / SpriteCodex::tileSize);
+				mineField.ToggleFlag( e.GetPos() ); // wnd.mouse.GetPos()
 			}
 		}
 	}

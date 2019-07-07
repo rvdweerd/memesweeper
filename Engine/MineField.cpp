@@ -41,7 +41,7 @@ void MineField::Tile::ToggleFlag()
 	}
 }
 
-void MineField::Tile::Draw(const Vei2& screenPos, Graphics& gfx, bool fieldExploded) const
+void MineField::Tile::Draw(const Vei2& screenPos, Graphics& gfx, bool fieldExploded, Vei2 delta) const
 {
 	if (!fieldExploded)
 	{
@@ -49,18 +49,18 @@ void MineField::Tile::Draw(const Vei2& screenPos, Graphics& gfx, bool fieldExplo
 		{
 			case State::Hidden:
 			{
-				SpriteCodex::DrawTileButton(screenPos, gfx);
+				SpriteCodex::DrawTileButton(screenPos+delta, gfx);
 				break;
 			}
 			case State::Flagged:
 			{
-				SpriteCodex::DrawTileButton(screenPos, gfx);
-				SpriteCodex::DrawTileFlag(screenPos, gfx);
+				SpriteCodex::DrawTileButton(screenPos+delta, gfx);
+				SpriteCodex::DrawTileFlag(screenPos+delta, gfx);
 				break;
 			}
 			case State::Revealed:
 			{
-				SpriteCodex::DrawTileNumber(screenPos, nBombsAround, gfx);
+				SpriteCodex::DrawTileNumber(screenPos+delta, nBombsAround, gfx);
 				break;
 			}
 		}
@@ -73,11 +73,11 @@ void MineField::Tile::Draw(const Vei2& screenPos, Graphics& gfx, bool fieldExplo
 			{
 				if (hasBomb)
 				{
-					SpriteCodex::DrawTileBomb(screenPos, gfx);
+					SpriteCodex::DrawTileBomb(screenPos+delta, gfx);
 				}
 				else
 				{
-					SpriteCodex::DrawTileButton(screenPos, gfx);
+					SpriteCodex::DrawTileButton(screenPos+delta, gfx);
 				}
 				break;
 			}
@@ -85,13 +85,13 @@ void MineField::Tile::Draw(const Vei2& screenPos, Graphics& gfx, bool fieldExplo
 			{
 				if (hasBomb)
 				{
-					SpriteCodex::DrawTileBomb(screenPos, gfx);
-					SpriteCodex::DrawTileFlag(screenPos, gfx);
+					SpriteCodex::DrawTileBomb(screenPos+delta, gfx);
+					SpriteCodex::DrawTileFlag(screenPos+delta, gfx);
 				}
 				else
 				{
-					SpriteCodex::DrawTileBomb(screenPos, gfx);
-					SpriteCodex::DrawTileCross(screenPos, gfx);
+					SpriteCodex::DrawTileBomb(screenPos+delta, gfx);
+					SpriteCodex::DrawTileCross(screenPos+delta, gfx);
 				}
 				break;
 			}
@@ -99,11 +99,11 @@ void MineField::Tile::Draw(const Vei2& screenPos, Graphics& gfx, bool fieldExplo
 			{
 				if (hasBomb)
 				{
-					SpriteCodex::DrawTileBombRed(screenPos, gfx);
+					SpriteCodex::DrawTileBombRed(screenPos+delta, gfx);
 				}
 				else
 				{
-					SpriteCodex::DrawTileNumber(screenPos, nBombsAround, gfx);
+					SpriteCodex::DrawTileNumber(screenPos+delta, nBombsAround, gfx);
 				}
 				break;
 			}
@@ -129,6 +129,7 @@ MineField::MineField(const int nBombs)
 
 	//put bombs in place
 	assert(nBombs > 0 && nBombs < width * height);
+	assert(width * SpriteCodex::tileSize <= Graphics::ScreenWidth && height * SpriteCodex::tileSize <= Graphics::ScreenHeight);
 	int index;
 	for (int i = 0; i < nBombs; i++)
 	{
@@ -153,12 +154,12 @@ MineField::MineField(const int nBombs)
 
 void MineField::Draw(Graphics& gfx) const
 {
-	gfx.DrawRect(RectI({ 0,0 }, Vei2(width, height)*SpriteCodex::tileSize), SpriteCodex::baseColor);
+	gfx.DrawRect(RectI(topLeft, topLeft+Vei2(width, height)*SpriteCodex::tileSize), SpriteCodex::baseColor);
 	
 	for (Vei2 grid = { 0,0 }; grid.y < height; grid.y++)
 		for (grid.x = 0; grid.x < width; grid.x++)
 		{
-			TileAt(grid).Draw(grid * SpriteCodex::tileSize, gfx, fieldHasExploded);
+			TileAt(grid).Draw(grid * SpriteCodex::tileSize, gfx, fieldHasExploded, topLeft);
 		}
 	/*
 	for (int i=0; i<width*height;i++)
@@ -168,15 +169,12 @@ void MineField::Draw(Graphics& gfx) const
 	*/
 }
 
-void MineField::DrawNeighborData(Graphics& gfx, Vei2& gridPos) const
-{
-	SpriteCodex::DrawTileNumber(gridPos * SpriteCodex::tileSize, TileAt(gridPos).GetNBombsAround(), gfx);
-}
 
 void MineField::OnRevealClick(const Vei2& screenPos)
 {
-	const Vei2 gridPos = ScreenToGrid(screenPos);
-	if (gridPos.x >= 0 && gridPos.x < width && gridPos.y >= 0 && gridPos.y < height)
+	const Vei2 gridPos = ScreenToGrid(screenPos - topLeft);
+	//if (gridPos.x >= 0 && gridPos.x < width && gridPos.y >= 0 && gridPos.y < height)
+	if (RectI({ 0,0 }, (width)* SpriteCodex::tileSize, (height)* SpriteCodex::tileSize).Contains(screenPos-topLeft))
 	{
 		Tile& tile = TileAt(gridPos);
 		if (!tile.IsRevealed() && !tile.IsFlagged())
@@ -195,7 +193,7 @@ void MineField::OnRevealClick(const Vei2& screenPos)
 					{
 						if (!(Vei2(x, y) == gridPos))
 						{
-							OnRevealClick(Vei2(x, y)*SpriteCodex::tileSize);
+							OnRevealClick(Vei2(x, y)*SpriteCodex::tileSize+topLeft);
 						}
 					}
 				}
@@ -224,9 +222,13 @@ int MineField::CountNeighborBombs(const Vei2& gridPos) const
 	return bombCount;
 }
 
-void MineField::ToggleFlag(Vei2& gridPos)
+void MineField::ToggleFlag(Vei2& screenPos)
 {
-	TileAt(gridPos).ToggleFlag();
+	//if (gridPos.x >= 0 && gridPos.x < width && gridPos.y >= 0 && gridPos.y < height)
+	if (RectI({ 0,0 }, (width ) * SpriteCodex::tileSize, (height ) * SpriteCodex::tileSize).Contains(screenPos-topLeft))
+	{
+		TileAt( (screenPos-topLeft)/SpriteCodex::tileSize ).ToggleFlag();
+	}
 }
 
 bool MineField::Exploded() const
