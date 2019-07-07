@@ -47,10 +47,10 @@ void Game::UpdateModel()
 		mineField.OnRevealClick( wnd.mouse.GetPos() );
 	}
 
-	//if (wnd.mouse.RightIsPressed())
+	/*if (wnd.mouse.RightIsPressed())
 	{
 		mineField.Peek(wnd.mouse.GetPos());
-	}
+	}*/
 
 }
 
@@ -58,7 +58,7 @@ void Game::ComposeFrame()
 {
 	mineField.Draw(gfx);
 
-	//if (wnd.mouse.RightIsPressed())
+	if (wnd.mouse.RightIsPressed())
 	{
 		mineField.DrawNeighborData(gfx,wnd.mouse.GetPos()/SpriteCodex::tileSize);
 	}

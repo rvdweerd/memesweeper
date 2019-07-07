@@ -2,6 +2,7 @@
 #include <random>
 #include <assert.h>
 #include "SpriteCodex.h"
+//#include "Vei2.h"
 
 MineField::MineField(int nBombs)
 {
@@ -9,6 +10,7 @@ MineField::MineField(int nBombs)
 	std::mt19937 rng( rd() );
 	std::uniform_int_distribution<int> iDistr(0, width * height);
 
+	//put bombs in place
 	assert(nBombs < width * height);
 	int index;
 	for (int i = 0; i < nBombs; i++)
@@ -19,6 +21,34 @@ MineField::MineField(int nBombs)
 		} while ( tileField[index].HasBomb() );
 		tileField[index].SpawnBomb();
 	}
+
+	//test and assign number of bombs around to each cell
+	for (int i = 0; i < width * height; i++)
+	{
+		Vei2 gridPos = { i % width , (i - i % width) / width };
+		Tile& tile = TileAt(gridPos);
+		if (tile.nBombsAround == -1)
+		{
+			int bombCount = 0;
+			for (int x = std::max(0, gridPos.x - 1); x <= std::min(width - 1, gridPos.x + 1); x++)
+			{
+				for (int y = std::max(0, gridPos.y - 1); y <= std::min(height - 1, gridPos.y + 1); y++)
+				{
+					//if (!(Vei2(x, y) == gridPos))
+					{
+						if (TileAt(Vei2(x, y)).hasBomb)
+						{
+							bombCount++;
+						}
+					}
+				}
+			}
+			tile.nBombsAround = bombCount;
+		}
+	}
+
+
+
 }
 
 void MineField::Draw(Graphics& gfx)
@@ -40,19 +70,7 @@ void MineField::Draw(Graphics& gfx)
 
 void MineField::DrawNeighborData(Graphics& gfx, Vei2& gridPos)
 {
-	//TileAt(gridPos).Draw(gridPos * SpriteCodex::tileSize, gfx);
-	switch (TileAt(gridPos).GetNBombsAround())
-	{
-	case 0: SpriteCodex::DrawTile0(gridPos * SpriteCodex::tileSize, gfx); break;
-	case 1: SpriteCodex::DrawTile1(gridPos * SpriteCodex::tileSize, gfx); break;
-	case 2: SpriteCodex::DrawTile2(gridPos * SpriteCodex::tileSize, gfx); break;
-	case 3: SpriteCodex::DrawTile3(gridPos * SpriteCodex::tileSize, gfx); break;
-	case 4: SpriteCodex::DrawTile4(gridPos * SpriteCodex::tileSize, gfx); break;
-	case 5: SpriteCodex::DrawTile5(gridPos * SpriteCodex::tileSize, gfx); break;
-	case 6: SpriteCodex::DrawTile6(gridPos * SpriteCodex::tileSize, gfx); break;
-	case 7: SpriteCodex::DrawTile7(gridPos * SpriteCodex::tileSize, gfx); break;
-	case 8: SpriteCodex::DrawTile8(gridPos * SpriteCodex::tileSize, gfx); break;
-	}
+	SpriteCodex::DrawTileNumber(gridPos * SpriteCodex::tileSize, TileAt(gridPos).nBombsAround, gfx);
 }
 
 void MineField::OnRevealClick(const Vei2& screenPos)
@@ -66,35 +84,6 @@ void MineField::OnRevealClick(const Vei2& screenPos)
 		tile.Reveal();
 	}
 }
-
-void MineField::Peek(const Vei2& screenPos)
-{
-	Vei2 const gridPos = ScreenToGrid(screenPos);
-	Tile& tile = TileAt(gridPos);
-	//tile.ScanNeighbors(gridPos);
-	int nNeighbors = 0;
-	int nBombsAround = 0;
-	for (int x = std::max(0, gridPos.x - 1); x <= std::min(width - 1, gridPos.x + 1); x++)
-	{
-		for (int y = std::max(0, gridPos.y - 1); y <= std::min(height - 1, gridPos.y + 1); y++)
-		{
-			if (!(Vei2(x, y) == gridPos))
-			{
-				nNeighbors++;
-				if (TileAt(Vei2(x, y)).hasBomb) 
-				{
-					nBombsAround++;
-				}
-			}
-		}
-	}
-	tile.SetNeighborData(nNeighbors, nBombsAround);
-}
-
-/*Vei2 MineField::TileAt(int index)
-{
-	return Vei2( index%width , (index - index%width)/width );
-}*/
 
 MineField::Tile& MineField::TileAt(const Vei2& gridPos)
 {
@@ -159,17 +148,6 @@ void MineField::Tile::Draw(const Vei2& screenPos, Graphics& gfx)
 		}
 
 	}
-}
-
-void MineField::Tile::ScanNeighbors(const Vei2& gridPos)
-{
-	
-}
-
-void MineField::Tile::SetNeighborData(const int nNeighbors_in, const int nBombsAround_in)
-{
-	nNeighbors = nNeighbors_in;
-	nBombsAround = nBombsAround_in;
 }
 
 int MineField::Tile::GetNBombsAround()

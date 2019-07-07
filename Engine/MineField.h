@@ -15,27 +15,21 @@ class MineField {
 		bool IsRevealed();
 		void Reveal();
 		void Draw(const Vei2& screenPos, Graphics& gfx);
-		void ScanNeighbors(const Vei2& gridPos);
-		void SetNeighborData(const int nNeighbors_in, const int nBombsAround_in);
 		int GetNBombsAround();
-	private:
-		Vei2 neighbors[8];
-		int nNeighbors=0;
-		int nBombsAround=0;
+
 	public:
 		State state = State::Hidden;
 		bool hasBomb = false;
+		int nBombsAround=-1;
 	};
 
 public:
-	MineField() = default;
+	//MineField() = default;
 	MineField(int nBombs);
 	void Draw(Graphics& gfx);
 	void DrawNeighborData(Graphics& gfx, Vei2& gridPos);
 	void OnRevealClick(const Vei2& screenPos);
-	void Peek(const Vei2& screenPos);
 private:
-	//Vei2 TileAt(int index);
 	Tile& TileAt(const Vei2& gridPos);
 	const Tile& TileAt(const Vei2& gridPos) const;
 	Vei2 ScreenToGrid(const Vei2& screenPos) const;
