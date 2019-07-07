@@ -26,7 +26,7 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	mineField( MineField::nBombs )
+	mineField( Vei2(gfx.ScreenWidth,gfx.ScreenHeight)/2, MineField::nBombs )
 	//endOfGame(L"spayed.wav") //unicode wide character string
 {
 }
@@ -45,7 +45,11 @@ void Game::UpdateModel()
 	{
 		if (wnd.mouse.LeftIsPressed())
 		{
-			mineField.OnRevealClick(wnd.mouse.GetPos());
+			Vei2 mousePos = wnd.mouse.GetPos();
+			if (mineField.GetRect().Contains(mousePos))
+			{
+				mineField.OnRevealClick(mineField.ScreenToGrid(mousePos));
+			}
 		}
 
 		while (!wnd.mouse.IsEmpty())
@@ -53,7 +57,11 @@ void Game::UpdateModel()
 			const Mouse::Event e = wnd.mouse.Read();
 			if (e.GetType() == Mouse::Event::Type::RPress)
 			{
-				mineField.ToggleFlag( e.GetPos() ); 
+				Vei2 mousePos = e.GetPos();
+				if (mineField.GetRect().Contains(mousePos))
+				{
+					mineField.ToggleFlag(mineField.ScreenToGrid(mousePos));
+				}
 			}
 		}
 	}

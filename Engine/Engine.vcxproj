@@ -236,6 +236,8 @@
     <Image Include="Chili.ico" />
   </ItemGroup>
   <ItemGroup>
+    <Media Include="coin.wav" />
+    <Media Include="fart1.wav" />
     <Media Include="spayed.wav" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
