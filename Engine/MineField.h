@@ -1,6 +1,7 @@
 #pragma once
 #include "Graphics.h"
 #include "SpriteCodex.h"
+#include "Sound.h"
 
 class MineField {
 		
@@ -34,17 +35,22 @@ public:
 	int CountNeighborBombs(const Vei2& gridPos) const;
 	void ToggleFlag(Vei2& screenPos);
 	bool Exploded() const;
+	bool CheckIsCleared() const;
+	bool IsCleared() const;
 private:
 	Tile& TileAt(const Vei2& gridPos);
 	const Tile& TileAt(const Vei2& gridPos) const;
 	Vei2 ScreenToGrid(const Vei2& screenPos) const;
 public:
-	static constexpr int width = 10;
-	static constexpr int height = 8;
+	static constexpr int width  = 30;
+	static constexpr int height = 20;
+	static constexpr int nBombs = int(width*height*0.03f);
 private:
 	Vei2 topLeft = { Graphics::ScreenWidth/2-width/2*SpriteCodex::tileSize, 
 					 int (float(Graphics::ScreenHeight) / 2 - float(height) / 2 * float(SpriteCodex::tileSize)) };
 	Tile tileField[height * width];
 	bool fieldHasExploded = false;
+	bool isCleared = false;
+	Sound endOfGame;
 
 };

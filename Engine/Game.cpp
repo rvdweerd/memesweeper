@@ -26,7 +26,8 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	mineField( MineField::width * MineField::height * 0.2f)
+	mineField( MineField::nBombs )
+	//endOfGame(L"spayed.wav") //unicode wide character string
 {
 }
 
@@ -40,7 +41,7 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
-	if (!mineField.Exploded())
+	if ( !mineField.Exploded() && !mineField.IsCleared() )
 	{
 		if (wnd.mouse.LeftIsPressed())
 		{
@@ -50,13 +51,9 @@ void Game::UpdateModel()
 		while (!wnd.mouse.IsEmpty())
 		{
 			const Mouse::Event e = wnd.mouse.Read();
-			/*if (e.GetType() == Mouse::Event::Type::LPress)
+			if (e.GetType() == Mouse::Event::Type::RPress)
 			{
-				mineField.OnRevealClick(wnd.mouse.GetPos());
-			}
-			else*/ if (e.GetType() == Mouse::Event::Type::RPress)
-			{
-				mineField.ToggleFlag( e.GetPos() ); // wnd.mouse.GetPos()
+				mineField.ToggleFlag( e.GetPos() ); 
 			}
 		}
 	}
@@ -66,26 +63,33 @@ void Game::ComposeFrame()
 {
 	mineField.Draw(gfx);
 
+	if (mineField.Exploded())
+	{
+		//SpriteCodex::DrawGameOver();
+	}
 
-
-
-
-	int i = 400;
-	SpriteCodex::DrawTile0({ i+=20,100 }, gfx);
-	SpriteCodex::DrawTile1({ i += 20,100 }, gfx);
-	SpriteCodex::DrawTile2({ i += 20,100 }, gfx);
-	SpriteCodex::DrawTile3({ i += 20,100 }, gfx);
-	SpriteCodex::DrawTile4({ i += 20,100 }, gfx);
-	SpriteCodex::DrawTile5({ i += 20,100 }, gfx);
-	SpriteCodex::DrawTile6({ i += 20,100 }, gfx);
-	SpriteCodex::DrawTile7({ i += 20,100 }, gfx);
-	SpriteCodex::DrawTile8({ i ,100 }, gfx);
-	i = 400;
-	SpriteCodex::DrawTileButton({ i+=20 ,120 }, gfx);
-	SpriteCodex::DrawTileCross({ i += 20 ,120 }, gfx);
-	SpriteCodex::DrawTileFlag({ i += 20 ,120 }, gfx);
-	SpriteCodex::DrawTileBomb({ i += 20 ,120 }, gfx);
-	SpriteCodex::DrawTileBombRed({ i += 20 ,120 }, gfx);
-
+	if ( mineField.IsCleared() )
+	{
+		SpriteCodex::DrawWin(Vei2(Graphics::ScreenWidth / 2, Graphics::ScreenHeight / 2), gfx);
+		
+		/* TEST DRAW GAMESPRITES
+		int i = 400;
+		SpriteCodex::DrawTile0({ i += 20,100 }, gfx);
+		SpriteCodex::DrawTile1({ i += 20,100 }, gfx);
+		SpriteCodex::DrawTile2({ i += 20,100 }, gfx);
+		SpriteCodex::DrawTile3({ i += 20,100 }, gfx);
+		SpriteCodex::DrawTile4({ i += 20,100 }, gfx);
+		SpriteCodex::DrawTile5({ i += 20,100 }, gfx);
+		SpriteCodex::DrawTile6({ i += 20,100 }, gfx);
+		SpriteCodex::DrawTile7({ i += 20,100 }, gfx);
+		SpriteCodex::DrawTile8({ i ,100 }, gfx);
+		i = 400;
+		SpriteCodex::DrawTileButton({ i += 20 ,120 }, gfx);
+		SpriteCodex::DrawTileCross({ i += 20 ,120 }, gfx);
+		SpriteCodex::DrawTileFlag({ i += 20 ,120 }, gfx);
+		SpriteCodex::DrawTileBomb({ i += 20 ,120 }, gfx);
+		SpriteCodex::DrawTileBombRed({ i += 20 ,120 }, gfx);
+		*/
+	}
 
 }

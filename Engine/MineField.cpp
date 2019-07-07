@@ -122,6 +122,8 @@ void MineField::Tile::SetNBombsAround(const int n)
 }
 
 MineField::MineField(const int nBombs)
+	:
+	endOfGame(L"spayed.wav") //unicode wide character string
 {
 	std::random_device rd;
 	std::mt19937 rng( rd() );
@@ -180,9 +182,10 @@ void MineField::OnRevealClick(const Vei2& screenPos)
 		if (!tile.IsRevealed() && !tile.IsFlagged())
 		{
 			tile.Reveal();
-			if (tile.HasBomb())
+			if (tile.HasBomb() && !fieldHasExploded)
 			{
 				fieldHasExploded = true;
+				endOfGame.Play();
 			}
 
 			if (tile.GetNBombsAround() == 0)
@@ -201,6 +204,12 @@ void MineField::OnRevealClick(const Vei2& screenPos)
 
 		}
 	}
+	if (!isCleared && CheckIsCleared() )
+	{
+		isCleared = true;
+		endOfGame.Play();
+	}
+	//return isCleared;
 }
 
 int MineField::CountNeighborBombs(const Vei2& gridPos) const
@@ -234,6 +243,27 @@ void MineField::ToggleFlag(Vei2& screenPos)
 bool MineField::Exploded() const
 {
 	return fieldHasExploded;
+}
+
+bool MineField::CheckIsCleared() const
+{
+	int nRevealed = 0;
+	for (Vei2 gridSweep = { 0,0 }; gridSweep.x < width; gridSweep.x++)
+	{
+		for (gridSweep.y = 0; gridSweep.y < height; gridSweep.y++)
+		{
+			if ( TileAt(gridSweep).IsRevealed() )
+			{
+				nRevealed++;
+			}
+		}
+	}
+	return (nRevealed == width*height - nBombs);
+}
+
+bool MineField::IsCleared() const
+{
+	return isCleared;
 }
 
 MineField::Tile& MineField::TileAt(const Vei2& gridPos)
