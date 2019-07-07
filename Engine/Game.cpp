@@ -40,28 +40,33 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
-	if (wnd.mouse.LeftIsPressed())
+	if (!mineField.Exploded())
 	{
-		//mineField.TileAt(Vei2(wnd.mouse.GetPosX(),wnd.mouse.GetPosY()) / SpriteCodex::tileSize ).Reveal();
-		//mineField.OnRevealClick( Vei2(wnd.mouse.GetPosX(), wnd.mouse.GetPosY()) );
-		mineField.OnRevealClick( wnd.mouse.GetPos() );
+		if (wnd.mouse.LeftIsPressed())
+		{
+			mineField.OnRevealClick(wnd.mouse.GetPos());
+		}
+
+		while (!wnd.mouse.IsEmpty())
+		{
+			const Mouse::Event e = wnd.mouse.Read();
+			/*if (e.GetType() == Mouse::Event::Type::LPress)
+			{
+				mineField.OnRevealClick(wnd.mouse.GetPos());
+			}
+			else*/ if (e.GetType() == Mouse::Event::Type::RPress)
+			{
+				mineField.ToggleFlag(wnd.mouse.GetPos() / SpriteCodex::tileSize);
+			}
+		}
 	}
-
-	/*if (wnd.mouse.RightIsPressed())
-	{
-		mineField.Peek(wnd.mouse.GetPos());
-	}*/
-
 }
-
+	
 void Game::ComposeFrame()
 {
 	mineField.Draw(gfx);
 
-	if (wnd.mouse.RightIsPressed())
-	{
-		mineField.DrawNeighborData(gfx,wnd.mouse.GetPos()/SpriteCodex::tileSize);
-	}
+
 
 
 
