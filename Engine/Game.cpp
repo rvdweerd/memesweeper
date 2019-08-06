@@ -27,7 +27,7 @@ Game::Game( MainWindow& wnd )
 	wnd( wnd ),
 	gfx( wnd ),
 	menu( { gfx.GetRect().GetCenter().x,200 } ),
-	field( gfx.GetRect().GetCenter(),4 )
+	field( gfx.GetRect().GetCenter(),1,1,1 )
 {
 }
 
@@ -65,6 +65,13 @@ void Game::UpdateModel()
 					}
 				}
 			}
+			else
+			{
+				if (e.GetType() == Mouse::Event::Type::LPress)
+				{
+					state = State::SelectionMenu;
+				}
+			}
 		}
 		else
 		{
@@ -72,9 +79,17 @@ void Game::UpdateModel()
 			switch( s )
 			{
 			case SelectionMenu::Size::Small:
-			case SelectionMenu::Size::Medium:
-			case SelectionMenu::Size::Large:
+				field.Reset(gfx.GetRect().GetCenter(), 6, 6, 6);
 				state = State::Memesweeper;
+				break;
+			case SelectionMenu::Size::Medium:
+				field.Reset(gfx.GetRect().GetCenter(), 8, 8, 8);
+				state = State::Memesweeper;
+				break;
+			case SelectionMenu::Size::Large:
+				field.Reset(gfx.GetRect().GetCenter(), 10, 10, 10);
+				state = State::Memesweeper;
+				break;
 			}
 		}
 	}
