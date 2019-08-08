@@ -50,7 +50,7 @@ private:
 	Graphics gfx;
 	/********************************/
 	/*  User Variables              */
-	MemeField field;
+	MemeField* pField;
 	SelectionMenu menu;
 	State state = State::SelectionMenu;
 	/********************************/
