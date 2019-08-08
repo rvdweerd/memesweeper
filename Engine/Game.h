@@ -25,6 +25,7 @@
 #include "Graphics.h"
 #include "MemeField.h"
 #include "SelectionMenu.h"
+#include <assert.h>
 
 class Game
 {
@@ -44,6 +45,8 @@ private:
 	void UpdateModel();
 	/********************************/
 	/*  User Functions              */
+	void CreateField(int nMemes, int width, int height);
+	void DestroyField();
 	/********************************/
 private:
 	MainWindow& wnd;

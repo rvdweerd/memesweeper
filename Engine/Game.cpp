@@ -69,8 +69,7 @@ void Game::UpdateModel()
 				if (e.GetType() == Mouse::Event::Type::LPress)
 				{
 					state = State::SelectionMenu;
-					pField->DestroyField();
-					delete pField; pField = nullptr;
+					DestroyField();
 				}
 			}
 		}
@@ -80,20 +79,33 @@ void Game::UpdateModel()
 			switch( s )
 			{
 			case SelectionMenu::Size::Small:
-				pField = new MemeField(gfx.GetRect().GetCenter(), 4, 4, 4);
+				CreateField(4, 4, 4);
 				state = State::Memesweeper;
 				break;
 			case SelectionMenu::Size::Medium:
-				pField = new MemeField(gfx.GetRect().GetCenter(), 8, 8, 8);
+				CreateField(8, 8, 8);
 				state = State::Memesweeper;
 				break;
 			case SelectionMenu::Size::Large:
-				pField = new MemeField(gfx.GetRect().GetCenter(), 12, 12, 12);
+				CreateField(12,12,12);
 				state = State::Memesweeper;
 				break;
 			}
 		}
 	}
+}
+
+void Game::CreateField(int nMemes, int width, int height)
+{
+	assert(pField == nullptr);
+	pField = new MemeField(gfx.GetRect().GetCenter(), nMemes, width, height);
+}
+
+void Game::DestroyField()
+{
+	pField->FreeResources();
+	delete pField; 
+	pField = nullptr;
 }
 
 void Game::ComposeFrame()

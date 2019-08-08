@@ -210,7 +210,7 @@ MemeField::State MemeField::GetState() const
 	return state;
 }
 
-void MemeField::DestroyField()
+void MemeField::FreeResources()
 {
 	delete[] field;
 	field = nullptr;
